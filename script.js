@@ -99,6 +99,24 @@ const ALGORITHMS = {
     description: 'Selects a pivot element and partitions the array around it. One of the fastest in practice due to excellent cache performance and low constant factors.',
     fn:          quickSort,
   },
+  radix: {
+  name:        'Radix Sort',
+  best:        'O(nk)',
+  average:     'O(nk)',
+  worst:       'O(nk)',
+  space:       'O(n+k)',
+  description: 'A non-comparison sort that processes digits from least to most significant. Beats O(n log n) when k (digit count) is small relative to n.',
+  fn:          radixSort,
+  },
+  heap: {
+  name:        'Heap Sort',
+  best:        'O(n log n)',
+  average:     'O(n log n)',
+  worst:       'O(n log n)',
+  space:       'O(1)',
+  description: 'Builds a max-heap from the array, then repeatedly extracts the maximum element. Guaranteed O(n log n) with no extra space — but poor cache performance in practice.',
+  fn:          heapSort,
+  },
 };
 
 /* ═══════════════════════════════════════════════════════════════
@@ -333,6 +351,94 @@ function* quickSort(arr) {
   }
 
   yield* qsort(0, n - 1);
+
+  for (let i = 0; i < n; i++) sorted.add(i);
+  yield { array: a, comparing: [], swapping: [], sorted, comparisons: comps, swaps: swps, done: true };
+}
+
+// ── Radix Sort ───────────────────────────────────────────────
+function* radixSort(arr) {
+  const a = [...arr];
+  const n = a.length;
+  const sorted = new Set();
+  let comps = 0, swps = 0;
+
+  const max = Math.max(...a);
+  const digitCount = Math.floor(Math.log10(max)) + 1;
+
+  for (let digit = 0; digit < digitCount; digit++) {
+    const divisor = Math.pow(10, digit);
+    const buckets = Array.from({ length: 10 }, () => []);
+
+    // Place into buckets
+    for (let i = 0; i < n; i++) {
+      const d = Math.floor(a[i] / divisor) % 10;
+      buckets[d].push(a[i]);
+      comps++;
+      yield { array: a, comparing: [i], swapping: [], sorted, comparisons: comps, swaps: swps };
+    }
+
+    // Read back from buckets
+    let idx = 0;
+    for (let b = 0; b < 10; b++) {
+      for (const val of buckets[b]) {
+        a[idx] = val;
+        swps++;
+        yield { array: a, comparing: [], swapping: [idx], sorted, comparisons: comps, swaps: swps };
+        idx++;
+      }
+    }
+  }
+
+  for (let i = 0; i < n; i++) sorted.add(i);
+  yield { array: a, comparing: [], swapping: [], sorted, comparisons: comps, swaps: swps, done: true };
+}
+
+// ── Heap Sort ────────────────────────────────────────────────
+function* heapSort(arr) {
+  const a = [...arr];
+  const n = a.length;
+  const sorted = new Set();
+  let comps = 0, swps = 0;
+
+  function* heapify(size, root) {
+    let largest = root;
+    const left  = 2 * root + 1;
+    const right = 2 * root + 2;
+
+    if (left < size) {
+      comps++;
+      yield { array: a, comparing: [largest, left], swapping: [], sorted, comparisons: comps, swaps: swps };
+      if (a[left] > a[largest]) largest = left;
+    }
+
+    if (right < size) {
+      comps++;
+      yield { array: a, comparing: [largest, right], swapping: [], sorted, comparisons: comps, swaps: swps };
+      if (a[right] > a[largest]) largest = right;
+    }
+
+    if (largest !== root) {
+      [a[root], a[largest]] = [a[largest], a[root]];
+      swps++;
+      yield { array: a, comparing: [], swapping: [root, largest], sorted, comparisons: comps, swaps: swps };
+      yield* heapify(size, largest);
+    }
+  }
+
+  // Build max heap
+  for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {
+    yield* heapify(n, i);
+  }
+
+  // Extract elements one by one
+  for (let i = n - 1; i > 0; i--) {
+    [a[0], a[i]] = [a[i], a[0]];
+    swps++;
+    sorted.add(i);
+    yield { array: a, comparing: [], swapping: [0, i], sorted, comparisons: comps, swaps: swps };
+    yield* heapify(i, 0);
+  }
 
   for (let i = 0; i < n; i++) sorted.add(i);
   yield { array: a, comparing: [], swapping: [], sorted, comparisons: comps, swaps: swps, done: true };
@@ -1105,6 +1211,8 @@ function initEventHandlers() {
       case '3': if (!State.raceMode) selectAlgo('insertion'); break;
       case '4': if (!State.raceMode) selectAlgo('merge');     break;
       case '5': if (!State.raceMode) selectAlgo('quick');     break;
+      case '6': if (!State.raceMode) selectAlgo('heap');      break;
+      case '7': if (!State.raceMode) selectAlgo('radix');     break;
     }
   });
 }
