@@ -1,4 +1,4 @@
-# SortLab — Algorithm Visualizer
+# Sort.EXE — Algorithm Visualizer
 
 A production-quality sorting algorithm visualizer built with vanilla HTML, CSS, and JavaScript. No frameworks, no dependencies (except Google Fonts via CDN).
 

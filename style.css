@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════
-   SORTLAB — Algorithm Visualizer
+   SORT.EXE — Algorithm Visualizer
    Theme: Dark terminal / oscilloscope aesthetic
    ═══════════════════════════════════════════════════════════════ */
 
@@ -220,6 +220,68 @@ body {
   font-weight: 500;
 }
 
+/* ── Algorithm checkbox list (race mode) ─────────────────── */
+.algo-checkbox-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.algo-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all var(--transition);
+  user-select: none;
+}
+
+.algo-checkbox-label:hover {
+  background: var(--bg-panel-hover);
+  border-color: var(--border-bright);
+  color: var(--text-primary);
+}
+
+.algo-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--border-bright);
+  border-radius: 3px;
+  background: transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+  position: relative;
+  transition: all var(--transition);
+}
+
+.algo-checkbox:checked {
+  background: var(--accent-cyan);
+  border-color: var(--accent-cyan);
+}
+
+.algo-checkbox:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.6rem;
+  color: #000;
+  font-weight: 700;
+}
+
+.algo-checkbox:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 .algo-btn.active::before { transform: scaleY(1); }
 .algo-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
@@ -261,6 +323,74 @@ body {
   color: var(--text-secondary);
 }
 
+/* ── Race grid ───────────────────────────────────────────── */
+#raceModeView {
+  overflow: auto;
+  padding: 16px;
+  flex: 1;
+  min-height: 0;  
+}
+
+.race-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-auto-rows: minmax(220px, 1fr);
+  flex: 1;      
+  min-height: 0;  
+}
+
+
+/* ── Race panel ──────────────────────────────────────────── */
+.race-panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  min-height: 220px;
+}
+
+.race-panel-header {
+  padding: 8px 14px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border);
+  text-transform: uppercase;
+  background: var(--bg-viz);
+}
+
+.race-viz-container {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 12px 8px 4px;
+  gap: 1px;
+  background: var(--bg-viz);
+}
+
+.race-panel-stats {
+  padding: 6px 14px;
+  display: flex;
+  gap: 16px;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  border-top: 1px solid var(--border);
+}
+
+.race-panel-stats b {
+  color: var(--accent-cyan);
+  font-weight: 600;
+}
+
 /* Stats */
 .stats-grid {
   display: grid;
@@ -298,6 +428,40 @@ body {
   letter-spacing: 0.08em;
 }
 
+/* ── Winner / loser panel states ─────────────────────────── */
+.race-panel.panel-winner {
+  border-color: var(--accent-yellow);
+  box-shadow: 0 0 20px rgba(255,234,0,0.15);
+}
+
+.race-panel.panel-winner .race-panel-header {
+  color: var(--accent-yellow);
+  border-bottom-color: var(--accent-yellow);
+}
+
+.race-panel.panel-loser {
+  opacity: 0.5;
+  filter: saturate(0.3);
+}
+
+.panel-finish-banner {
+  padding: 6px 14px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-align: center;
+  background: rgba(255, 0, 0, 0.2);
+  color: var(--text-secondary);
+  border-top: 1px solid var(--border);
+  letter-spacing: 0.05em;
+}
+
+.race-panel.panel-winner .panel-finish-banner {
+  color: var(--accent-yellow);
+  background: rgba(255,234,0,0.07);
+  border-top-color: var(--accent-yellow);
+}
+
 /* Legend */
 .legend { display: flex; flex-direction: column; gap: 6px; }
 
@@ -325,6 +489,13 @@ body {
   flex-direction: column;
   overflow: hidden;
   min-width: 0;
+}
+.viz-wrapper-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
 }
 
 /* Controls Bar */
@@ -423,6 +594,35 @@ body {
 .btn-secondary:hover {
   border-color: var(--text-secondary);
   color: var(--text-primary);
+}
+/* ── Race mode toggle button ─────────────────────────────── */
+.race-toggle-btn {
+  width: 100%;
+  padding: 8px 12px;
+  background: transparent;
+  border: 1px solid var(--border-bright);
+  border-radius: var(--radius);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: all var(--transition);
+  text-transform: uppercase;
+}
+
+.race-toggle-btn:hover {
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+  background: rgba(0,229,255,0.05);
+}
+
+.race-toggle-btn.active {
+  background: rgba(0,229,255,0.1);
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+  box-shadow: 0 0 10px rgba(0,229,255,0.15);
 }
 
 .btn-warning {
@@ -637,6 +837,12 @@ body {
   .controls-bar { gap: 12px; padding: 10px 12px; }
   .slider { width: 80px; }
   .actions { margin-left: 0; }
+  .race-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 480px) {
+  .race-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 580px) {

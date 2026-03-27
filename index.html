@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SortLab — Algorithm Visualizer</title>
+  <title>Sort.exe — Algorithm Visualizer</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -16,14 +16,12 @@
     <div class="header-left">
       <div class="logo">
         <span class="logo-bracket">[</span>
-        <span class="logo-text">SORT</span>
-        <span class="logo-accent">LAB</span>
+        <span class="logo-text">SORT</span><span class="logo-accent">.EXE</span>
         <span class="logo-bracket">]</span>
       </div>
       <span class="header-tagline">Algorithm Visualizer</span>
     </div>
     <div class="header-right">
-      <!-- Sound toggle -->
       <button class="icon-btn" id="soundToggle" title="Toggle Sound">
         <svg id="soundIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
@@ -31,7 +29,6 @@
           <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
         </svg>
       </button>
-      <!-- Theme toggle -->
       <button class="icon-btn" id="themeToggle" title="Toggle Theme">
         <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="5"/>
@@ -54,8 +51,14 @@
     <!-- ── LEFT SIDEBAR ──────────────────────────────────────── -->
     <aside class="sidebar">
 
-      <!-- Algorithm Selector -->
+      <!-- Race Mode Toggle -->
       <div class="panel">
+        <div class="panel-label">MODE</div>
+        <button class="race-toggle-btn" id="raceModeToggle">Race Mode</button>
+      </div>
+
+      <!-- Single mode: Algorithm Selector -->
+      <div class="panel" id="singleModeAlgoPanel">
         <div class="panel-label">ALGORITHM</div>
         <div class="algo-list" id="algoList">
           <button class="algo-btn active" data-algo="bubble">Bubble Sort</button>
@@ -66,7 +69,34 @@
         </div>
       </div>
 
-      <!-- Algorithm Info -->
+      <!-- Race mode: Algorithm Checkboxes -->
+      <div class="panel hidden" id="raceModeAlgoPanel">
+        <div class="panel-label">SELECT ALGORITHMS</div>
+        <div class="algo-checkbox-list" id="algoCheckboxList">
+          <label class="algo-checkbox-label">
+            <input type="checkbox" class="algo-checkbox" data-algo="bubble" />
+            Bubble Sort
+          </label>
+          <label class="algo-checkbox-label">
+            <input type="checkbox" class="algo-checkbox" data-algo="selection" />
+            Selection Sort
+          </label>
+          <label class="algo-checkbox-label">
+            <input type="checkbox" class="algo-checkbox" data-algo="insertion" />
+            Insertion Sort
+          </label>
+          <label class="algo-checkbox-label">
+            <input type="checkbox" class="algo-checkbox" data-algo="merge" />
+            Merge Sort
+          </label>
+          <label class="algo-checkbox-label">
+            <input type="checkbox" class="algo-checkbox" data-algo="quick" />
+            Quick Sort
+          </label>
+        </div>
+      </div>
+
+      <!-- Algorithm Info (single mode only) -->
       <div class="panel" id="algoInfoPanel">
         <div class="panel-label">COMPLEXITY</div>
         <div class="complexity-grid">
@@ -90,8 +120,8 @@
         <p class="algo-description" id="algoDescription">Select an algorithm to see its description.</p>
       </div>
 
-      <!-- Stats -->
-      <div class="panel">
+      <!-- Stats (single mode only) -->
+      <div class="panel" id="statsPanel">
         <div class="panel-label">STATISTICS</div>
         <div class="stats-grid">
           <div class="stat-item">
@@ -144,20 +174,25 @@
         </div>
       </div>
 
-      <!-- Visualizer Area -->
-      <div class="viz-wrapper">
-        <div class="viz-container" id="vizContainer">
-          <!-- Bars rendered by JS -->
-        </div>
-        <!-- Scan line effect -->
-        <div class="scanline"></div>
-        <!-- Overlay shown when sorting is complete -->
-        <div class="viz-overlay hidden" id="vizOverlay">
-          <div class="overlay-content">
-            <div class="overlay-checkmark">✓</div>
-            <div class="overlay-title">Sort Complete</div>
-            <div class="overlay-stats" id="overlayStats"></div>
+      <!-- ── Single Mode View ───────────────────────────────── -->
+      <div id="singleModeView" class="viz-wrapper-container">
+        <div class="viz-wrapper">
+          <div class="viz-container" id="vizContainer"></div>
+          <div class="scanline"></div>
+          <div class="viz-overlay hidden" id="vizOverlay">
+            <div class="overlay-content">
+              <div class="overlay-checkmark">✓</div>
+              <div class="overlay-title">Sort Complete</div>
+              <div class="overlay-stats" id="overlayStats"></div>
+            </div>
           </div>
+        </div>
+      </div>
+
+      <!-- ── Race Mode View ─────────────────────────────────── -->
+      <div id="raceModeView" class="viz-wrapper-container hidden">
+        <div class="race-grid" id="raceGrid">
+          <!-- panels injected by UIController.buildRacePanels() -->
         </div>
       </div>
 
